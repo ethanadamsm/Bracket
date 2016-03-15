@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
 	
 	static ArrayList<String[]> lines = new ArrayList<String[]>();
-	ArrayList<Team> teams = new ArrayList<Team>();
+	private static ArrayList<Team> teams = new ArrayList<Team>();
 	static ArrayList<String[]> matchup = new ArrayList<String[]>();
 	
 	public static void main(String[] args){
@@ -16,32 +16,64 @@ public class Main {
 			File file2 = new File(filename2);
 			Scanner input = new Scanner(file);
 			Scanner input2 = new Scanner(file2);
-			while(input.hasNextLine()){
+			input.nextLine();
+			while(input.hasNextLine()){		
 				String line = input.nextLine();
 				String[] temp = new String[4];
 				temp = line.split(",");
-				teams.add(temp[0], Float.valueOf(temp[1]), temp[2], Integer.valueOf(temp[3]));
-				lines.add(line.split(","));
-				System.out.println(line);
+				teams.add(new Team(temp[0], Float.parseFloat(temp[1]), temp[2], Integer.parseInt(temp[3])));	
 			}
+			teams.remove(0);
 			
 			while(input2.hasNextLine()){
 				String line = input2.nextLine();
 				matchup.add(line.split(","));
 			}
 			input.close();
+			
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		
+		ArrayList<Team> teamss = firstFaceOff();
+		
 	}
 	
-	private ArrayList<Team> createTeams(ArrayList<String[]> array){
+	private static ArrayList<Team> firstFaceOff(){
+		ArrayList<Team> east = new ArrayList<Team>();
+		ArrayList<Team> mideast = new ArrayList<Team>();
+		ArrayList<Team> south = new ArrayList<Team>();
+		ArrayList<Team> west = new ArrayList<Team>();
 		ArrayList<Team> finalteams = new ArrayList<Team>();
-		for(int i = 1; i < array.size(); i++){
-			finalteams.add(array.get(i)[0], Float.valueOf(array.get(i)[1]), array.get(i)[2], Integer.valueOf(array.get(i)[3]));
+		
+		for(int i = 0; i < teams.size(); i++){
+			if(teams.get(i).getRegion() == "East"){
+				east.add(teams.get(i));
+			}else if(teams.get(i).getRegion() == "Mideast"){
+				mideast.add(teams.get(i));
+			}else if(teams.get(i).getRegion() == "South"){
+				south.add(teams.get(i));
+			}else{
+				west.add(teams.get(i));
+			}
 		}
+		
+		for(int i = 0; i < matchup.size(); i++){
+			float pa = east.get(Integer.parseInt(matchup.get(i)[0])).getPercentage() / 100;
+			float pb = east.get(Integer.parseInt(matchup.get(i)[1])).getPercentage() / 100;
+			float p = (pa - pa * pb) / (pa + pb - 2 * pa * pb);
+			float rand = (float) Math.random();
+			if(rand <= p){
+				if(pa > pb){
+					finalteams.add(east.get(Integer.parseInt(matchup.get(i)[0])));
+				}else{
+					finalteams.add(east.get(Integer.parseInt(matchup.get(i)[1])));
+				}
+			}
+		}
+		
 		return finalteams;
+		
 	}
 	
 }
