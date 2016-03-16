@@ -4,12 +4,21 @@ public class Team {
 	private float percentage;
 	private String region;
 	private int seed;
+	private int wins;
 	
 	public Team(String name, float percentage, String region, int seed){
 		this.name = name;
 		this.percentage = percentage;
 		this.region = region;
 		this.seed = seed;
+	}
+	
+	public void addWin(){
+		wins++;
+	}
+	
+	public int getWins(){
+		return wins;
 	}
 	
 	public String getName() {
